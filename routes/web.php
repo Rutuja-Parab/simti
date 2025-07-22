@@ -58,9 +58,8 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
 
 // Shared Routes (faculty + Manager)
 Route::middleware(['auth', RoleMiddleware::class . ':faculty,examcell,admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('adminDashboard');
-    })->name('dashboard');
+    // Replace the closure route for admin dashboard with a controller method
+    Route::get('/admin/dashboard', [App\Http\Controllers\Controller::class, 'adminDashboard'])->name('dashboard');
 
     Route::get('/add-candidate', [PhotoValidationController::class, 'addCandidate'])->name('candidate.add');
     Route::get('/candidate', [PhotoValidationController::class, 'candidate'])->name('candidate.view');
