@@ -19,8 +19,10 @@ class Candidates extends Model
         'cdc_no',
         'dgs_certificate_no',
         'course_detail_id',
-        'photo_path',
+        'photo_path', 
         'signature_path',
+        'marksheet_path',
+        'certificate_path',
         'passport_path',
     ];
 
