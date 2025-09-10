@@ -20,10 +20,11 @@
             <div class="mb-3">
                 <label>Role</label><span class="text-danger">*</span>
                 <select name="role" id="roleSelect" class="form-select" required>
-                    <option value="">Select Role</option>
-                    @foreach($roles as $role)
-                        <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                    @endforeach
+                    <option value="" disabled>Select Role</option>
+                    
+                    <option value="admin">Admin</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="examcell">Exam Cell</option>
                 </select>
             </div>
 
