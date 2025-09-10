@@ -52,10 +52,15 @@ class CourseDetailsController extends Controller
         return redirect()->route('course-details.index')->with('success', 'Course detail updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(CourseDetail $courseDetail)
     {
-        $courseDetail = CourseDetail::findOrFail($id);
         $courseDetail->delete();
         return redirect()->route('course-details.index')->with('success', 'Course detail deleted successfully.');
+    }
+
+    public function createCandidateForm($course_detail_id)
+    {
+        $candidateController = new CandidateController();
+        return $candidateController->create($course_detail_id);
     }
 } 
