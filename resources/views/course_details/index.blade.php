@@ -47,7 +47,7 @@
                             <a href="#"
                                onclick="copyToClipboard('{{ route('candidate.link', ['token' => $token]) }}'); return false;"
                                class="btn btn-sm btn-info">
-                               Add Candidate
+                               Generate Link
                             </a>
                         </td>
                     </tr>
