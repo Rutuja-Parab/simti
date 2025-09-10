@@ -182,7 +182,7 @@
                                             <i class="bi bi-dot"></i> Add Subjects
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <a href="{{ url('/master/roles') }}"
                                             class="nav-link text-white small {{ request()->is('master/roles') ? 'active' : '' }}">
                                             <i class="bi bi-dot"></i> Roles
@@ -193,7 +193,7 @@
                                             class="nav-link text-white small {{ request()->is('master/permissions') ? 'active' : '' }}">
                                             <i class="bi bi-dot"></i> Permissions
                                         </a>
-                                    </li>
+                                    </li> -->
                                 </ul>
                             </div>
                         </li>
