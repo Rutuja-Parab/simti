@@ -155,7 +155,7 @@
                                     `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">`;
                             } else if (fileType === 'application/pdf') {
                                 previewBox.innerHTML = `
-            <iframe src="${e.target.result}" type="application/pdf" width="100%" height="300px" class="border rounded"></iframe>
+            <iframe src="${e.target.result}" type="application/pdf" width="100%" height="500px" class="border rounded"></iframe>
             <div class="small text-muted mt-1"><i class="bi bi-file-earmark-pdf"></i> ${file.name}</div>
         `;
                             } else {

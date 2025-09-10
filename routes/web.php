@@ -7,6 +7,8 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\PhotoValidationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\CourseDetailsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\RoleMiddleware;
 use App\Models\Subject;
@@ -107,6 +109,8 @@ Route::post('/notifications/mark-all-read', function () {
 
 Route::get('/verify/certificate/{id}', [App\Http\Controllers\CertificateController::class, 'verify'])->name('certificate.verify');
 
-
-
-
+Route::post('/submit-candidate-form', [CandidateController::class, 'store'])->name('candidate.store');
+Route::get('/course-details/{course_detail_id}/candidate-form', [CourseDetailsController::class, 'createCandidateForm'])->name('course-details.createCandidateForm');
+Route::post('/candidate-upload', [CandidateController::class, 'upload'])->name('candidate.upload')->withoutMiddleware(['auth']);
+Route::get('/candidate-link', [CandidateController::class, 'openFromToken'])
+    ->name('candidate.link');
