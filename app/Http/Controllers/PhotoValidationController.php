@@ -135,7 +135,7 @@ class PhotoValidationController extends Controller
                 'dob' => 'required|date',
                 'indos_no' => 'required|string|max:100',
                 'passport_no' => 'required|string|max:100',
-                'cdc_no' => 'required|string|max:100',
+                'cdc_no' => 'nullable|string|max:100',
                 'dgs_certificate_no' => 'nullable|string|max:100',
                 'course_detail_id' => 'required|exists:course_details,id',
             ]);

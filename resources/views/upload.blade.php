@@ -27,8 +27,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Full Name</label><span
-                                        class="text-danger">*</span>
+                                    <label for="name" class="form-label">Full Name</label><span class="text-danger">*</span>
                                     <input type="text" class="form-control" name="name" id="name" required>
                                 </div>
 
@@ -51,15 +50,15 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="cdc_no" class="form-label">CDC Number</label><span
-                                        class="text-danger">*</span>
-                                    <input type="text" class="form-control" name="cdc_no" id="cdc_no" required>
+                                    <label for="cdc_no" class="form-label">CDC Number</label>
+                                    <input type="text" class="form-control" name="cdc_no" id="cdc_no">
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="dgs_certificate_no" class="form-label">DGS Certificate Number</label>
                                     <input type="text" class="form-control" name="dgs_certificate_no"
-                                        id="dgs_certificate_no">
+                                        id="dgs_certificate_no" pattern="[A-Za-z0-9]{12}" maxlength="12" minlength="12"
+                                        title="Please enter exactly 12 letters or digits" required>
                                 </div>
 
                                 {{-- Course Dropdown --}}
@@ -68,7 +67,8 @@
                                     <select name="course_detail_id" id="course_detail_id" class="form-select" required>
                                         <option value="">Select Course & Batch</option>
                                         @foreach($courseDetails as $cd)
-                                            <option value="{{ $cd->id }}">{{ $cd->course->name }} - Batch {{ $cd->batch_no }}</option>
+                                            <option value="{{ $cd->id }}">{{ $cd->course->name }} - Batch {{ $cd->batch_no }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -76,8 +76,7 @@
                                 {{-- Document Uploads --}}
                                 @foreach (['photo' => 'Passport Photo', 'signature' => 'Signature', 'passport' => 'Passport Document'] as $type => $label)
                                     <div class="mb-4">
-                                        <label class="form-label">{{ $label }}</label><span
-                                            class="text-danger">*</span>
+                                        <label class="form-label">{{ $label }}</label><span class="text-danger">*</span>
                                         <input type="file" class="form-control file-input" name="{{ $type }}"
                                             data-type="{{ $type }}" required accept=".jpg,.jpeg,.png,.pdf">
 
@@ -126,13 +125,13 @@
 
         {{-- Script --}}
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 const inputs = document.querySelectorAll('.file-input');
                 const submitBtn = document.getElementById('finalSubmitBtn');
                 const validationStatus = {};
 
                 inputs.forEach(input => {
-                    input.addEventListener('change', function() {
+                    input.addEventListener('change', function () {
                         const type = input.dataset.type;
                         const file = input.files[0];
                         const loader = input.parentElement.querySelector('.loader');
@@ -150,15 +149,15 @@
                         const fileType = file.type;
                         const reader = new FileReader();
 
-                        reader.onload = function(e) {
+                        reader.onload = function (e) {
                             if (fileType.startsWith('image/')) {
                                 previewBox.innerHTML =
                                     `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">`;
                             } else if (fileType === 'application/pdf') {
                                 previewBox.innerHTML = `
-        <iframe src="${e.target.result}" type="application/pdf" width="100%" height="300px" class="border rounded"></iframe>
-        <div class="small text-muted mt-1"><i class="bi bi-file-earmark-pdf"></i> ${file.name}</div>
-    `;
+            <iframe src="${e.target.result}" type="application/pdf" width="100%" height="300px" class="border rounded"></iframe>
+            <div class="small text-muted mt-1"><i class="bi bi-file-earmark-pdf"></i> ${file.name}</div>
+        `;
                             } else {
                                 previewBox.innerHTML =
                                     `<div class="text-muted">Preview not available</div>`;
@@ -174,9 +173,9 @@
                         formData.append('_token', '{{ csrf_token() }}');
 
                         fetch('{{ route('photo.upload') }}', {
-                                method: 'POST',
-                                body: formData
-                            })
+                            method: 'POST',
+                            body: formData
+                        })
                             .then(response => response.text())
                             .then(html => {
                                 loader.classList.add('d-none');
