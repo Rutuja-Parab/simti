@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -30,7 +31,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
-            'role' => 'required|exists:roles,name',
+            'role' => ['required', Rule::in(['admin', 'faculty', 'examcell'])],
             // 'course_id' => 'required_if:role,faculty|nullable|exists:courses,id',
             'subject_ids' => 'required_if:role,faculty|array',
             'subject_ids.*' => 'exists:subjects,id',
@@ -78,7 +79,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|exists:roles,name',
+           'role' => ['required', Rule::in(['admin', 'faculty', 'examcell'])],
             'subject_ids' => 'required_if:role,faculty|array',
             'subject_ids.*' => 'exists:subjects,id',
         ]);

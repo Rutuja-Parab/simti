@@ -53,87 +53,88 @@
 
         <!-- Form -->
         @if(!session('success'))
-        <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <form id="candidateForm" method="POST" enctype="multipart/form-data"
-                    action="{{ route('candidate.store') }}">
-                    @csrf
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header text-white" style="background-color: #3881c3;">
-                            <h5 class="mb-0">Candidate Form</h5>
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <form id="candidateForm" method="POST" enctype="multipart/form-data"
+                        action="{{ route('candidate.store') }}">
+                        @csrf
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header text-white" style="background-color: #3881c3;">
+                                <h5 class="mb-0">Candidate Form</h5>
+                            </div>
+                            <div class="card-body">
+                                {{-- Candidate Info --}}
+                                <div class="row">
+                                    <input type="hidden" name="course_detail_id" value="{{ $courseDetail->id }}">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="roll_no" class="form-label">Roll Number</label>
+                                        <input type="text" class="form-control" name="roll_no" id="roll_no">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name" class="form-label">Full Name <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="name" id="name" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="dob" class="form-label">Date of Birth <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" name="dob" id="dob" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="indos_no" class="form-label">INDOS Number <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="indos_no" id="indos_no" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="passport_no" class="form-label">Passport Number <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="passport_no" id="passport_no"
+                                            pattern="^[A-Za-z0-9]{9}$"
+                                            title="Please enter a valid passport number (9 letters/numbers)" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cdc_no" class="form-label">CDC Number</label>
+                                        <input type="text" class="form-control" name="cdc_no" id="cdc_no">
+                                    </div>
+                                </div>
+
+                                {{-- Course --}}
+                                <div class="mb-3">
+                                    <label class="form-label">Course & Batch</label>
+                                    <input type="text" class="form-control"
+                                        value="{{ $courseDetail->course->name }} - Batch {{ $courseDetail->batch_no }}"
+                                        readonly>
+                                </div>
+
+                                {{-- Document Uploads --}}
+                                @foreach (['photo' => 'Passport Photo', 'signature' => 'Signature', 'passport' => 'Passport Document'] as $type => $label)
+                                    <div class="mb-4">
+                                        <label class="form-label">{{ $label }} <span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control file-input" name="{{ $type }}"
+                                            data-type="{{ $type }}" required accept=".jpg,.jpeg,.png,.pdf">
+                                        <div class="spinner-border text-primary mt-2 d-none loader" role="status"></div>
+                                        <div class="mt-2 validation-result" data-type="{{ $type }}"></div>
+                                        <div class="mt-3 preview-box" data-type="{{ $type }}"></div>
+                                    </div>
+                                @endforeach
+
+                                {{-- Submit --}}
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-success w-100" id="finalSubmitBtn" disabled>Submit
+                                        All Documents</button>
+                                </div>
+
+                            </div>
                         </div>
-                        <div class="card-body">
-                            {{-- Candidate Info --}}
-                            <div class="row">
-                            <input type="hidden" name="course_detail_id" value="{{ $courseDetail->id }}">
-                                <div class="col-md-6 mb-3">
-                                    <label for="roll_no" class="form-label">Roll Number</label>
-                                    <input type="text" class="form-control" name="roll_no" id="roll_no">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="name" class="form-label">Full Name <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="name" id="name" required>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="dob" class="form-label">Date of Birth <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="dob" id="dob" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="indos_no" class="form-label">INDOS Number <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="indos_no" id="indos_no" required>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="passport_no" class="form-label">Passport Number <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="passport_no" id="passport_no"
-                                        required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="cdc_no" class="form-label">CDC Number</label>
-                                    <input type="text" class="form-control" name="cdc_no" id="cdc_no">
-                                </div>
-                            </div>
-
-                            {{-- Course --}}
-                            <div class="mb-3">
-                                <label class="form-label">Course & Batch</label>
-                                <input type="text" class="form-control"
-                                    value="{{ $courseDetail->course->name }} - Batch {{ $courseDetail->batch_no }}"
-                                    readonly>
-                            </div>
-
-                            {{-- Document Uploads --}}
-                            @foreach (['photo' => 'Passport Photo', 'signature' => 'Signature', 'passport' => 'Passport Document'] as $type => $label)
-                                <div class="mb-4">
-                                    <label class="form-label">{{ $label }} <span class="text-danger">*</span></label>
-                                    <input type="file" class="form-control file-input" name="{{ $type }}"
-                                        data-type="{{ $type }}" required accept=".jpg,.jpeg,.png,.pdf">
-                                    <div class="spinner-border text-primary mt-2 d-none loader" role="status"></div>
-                                    <div class="mt-2 validation-result" data-type="{{ $type }}"></div>
-                                    <div class="mt-3 preview-box" data-type="{{ $type }}"></div>
-                                </div>
-                            @endforeach
-
-                            {{-- Submit --}}
-                            <div class="mt-4">
-                                <button type="submit" class="btn btn-success w-100" id="finalSubmitBtn" disabled>Submit
-                                    All Documents</button>
-                            </div>
-
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
         @endif
     </div>
 

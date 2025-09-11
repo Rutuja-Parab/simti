@@ -75,7 +75,7 @@ class CandidateController extends Controller
             return back()->with('success', 'All documents successfully submitted!');
         } catch (\Exception $e) {
             \Log::error('Candidate Store Error: ' . $e->getMessage());
-            return back()->with('error', 'Something went wrong. Please try again later.' . $e->getMessage());
+            return back()->with('error', 'Something went wrong.' . $e->getMessage());
         }
     }
 
