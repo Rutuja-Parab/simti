@@ -66,8 +66,8 @@
                                 <input type="text" name="passport_no" class="form-control" value="{{ $candidate->passport_no }}" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">CDC No</label><span class="text-danger">*</span>
-                                <input type="text" name="cdc_no" class="form-control" value="{{ $candidate->cdc_no }}" required>
+                                <label class="form-label">CDC No</label>
+                                <input type="text" name="cdc_no" class="form-control" value="{{ $candidate->cdc_no }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">DGS Certificate No (Optional)</label>

@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\CourseDetail;
 use App\Models\Marks;
+use App\Models\User;
+use App\Notifications\MarksUpdatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class CourseMarksController extends Controller
@@ -83,7 +86,7 @@ class CourseMarksController extends Controller
                             $termMark = $obtained[$term] ?? null;
                             if ($termMark === null || $termMark === '')
                                 continue;
-                            Marks::updateOrCreate(
+                            $marks = Marks::updateOrCreate(
                                 [
                                     'candidate_id' => $candidateId,
                                     'subject_id' => $subjectId,
@@ -103,7 +106,7 @@ class CourseMarksController extends Controller
                         // Non-GME: Save single mark
                         if ($obtained === null || $obtained === '')
                             continue;
-                        Marks::updateOrCreate(
+                        $marks = Marks::updateOrCreate(
                             [
                                 'candidate_id' => $candidateId,
                                 'subject_id' => $subjectId,
@@ -119,22 +122,15 @@ class CourseMarksController extends Controller
                             ]
                         );
                     }
+                    $marks->load('candidate', 'subject');
 
-                    // Notify examcell users if edited by faculty
-                    // if ($user->role === 'faculty' || $user->role === 'teacher') {
-                    //     $candidate = \App\Models\Candidates::find($candidateId);
-                    //     $examcellUsers = \App\Models\User::where('role', 'examcell')->get();
-                    //     foreach ($examcellUsers as $examcell) {
-                    //         $examcell->notify(new \App\Notifications\MarksEditedNotification([
-                    //             'faculty' => $user->name,
-                    //             'course' => $candidate && $candidate->courseDetail && $candidate->courseDetail->course ? $candidate->courseDetail->course->name : '-',
-                    //             'batch' => $candidate && $candidate->courseDetail ? $candidate->courseDetail->batch_no : '-',
-                    //             'candidate' => $candidate ? $candidate->name : '-',
-                    //             'subject' => \App\Models\Subject::find($subjectId)->name ?? '-',
-                    //             'message' => 'Marks edited by ' . $user->name
-                    //         ]));
-                    //     }
-                    // }
+                    $examcells = User::where('role', 'examcell')->get();
+                    try{
+                        Notification::send($examcells, new MarksUpdatedNotification($marks));
+                    }
+                    catch(\Exception $e){
+                        Log::error('Notification Error: ' . $e->getMessage());
+                    }
                 }
             }
             return redirect()->route('course.marks.index')->with('success', 'Marks saved successfully!');

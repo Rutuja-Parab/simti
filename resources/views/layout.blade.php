@@ -57,16 +57,19 @@
             /* Above modals */
             max-width: 400px;
         }
+
         /* Responsive sidebar logo */
         .sidebar-logo {
             height: 60px;
             max-width: 100%;
         }
+
         @media (max-width: 576px) {
             .sidebar-logo {
                 height: 36px;
             }
         }
+
         /* Responsive background logo */
         .content-bg-logo {
             position: absolute;
@@ -79,6 +82,7 @@
             max-height: 70vh;
             pointer-events: none;
         }
+
         @media (max-width: 576px) {
             .content-bg-logo {
                 max-width: 90vw;
@@ -101,10 +105,11 @@
         <div class="row min-vh-100">
             <!-- Sidebar -->
             <div class="col-md-2 bg-primary text-white p-4 d-flex flex-column shadow-sm">
-                 <a href="{{ route('dashboard') }}">
-                 <h4 class="text-center fw-bold mb-2">
-                    <img src="/logo1.png" alt="Logo" class="sidebar-logo img-fluid">
-                </h4></a>
+                <a href="{{ route('dashboard') }}">
+                    <h4 class="text-center fw-bold mb-2">
+                        <img src="/logo1.png" alt="Logo" class="sidebar-logo img-fluid">
+                    </h4>
+                </a>
                 @if(auth()->check())
                     <div class="text-center mb-4 small" style="font-weight:600;">
                         <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->name }}
@@ -149,7 +154,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('certificates.wizard') }}"
-                               class="nav-link text-white {{ request()->routeIs('certificates.wizard') ? 'active' : '' }}">
+                                class="nav-link text-white {{ request()->routeIs('certificates.wizard') ? 'active' : '' }}">
                                 <i class="bi bi-award me-2"></i> Certificate Wizard
                             </a>
                         </li>
@@ -183,17 +188,17 @@
                                         </a>
                                     </li>
                                     <!-- <li class="nav-item">
-                                        <a href="{{ url('/master/roles') }}"
-                                            class="nav-link text-white small {{ request()->is('master/roles') ? 'active' : '' }}">
-                                            <i class="bi bi-dot"></i> Roles
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ url('/master/permissions') }}"
-                                            class="nav-link text-white small {{ request()->is('master/permissions') ? 'active' : '' }}">
-                                            <i class="bi bi-dot"></i> Permissions
-                                        </a>
-                                    </li> -->
+                                                <a href="{{ url('/master/roles') }}"
+                                                    class="nav-link text-white small {{ request()->is('master/roles') ? 'active' : '' }}">
+                                                    <i class="bi bi-dot"></i> Roles
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="{{ url('/master/permissions') }}"
+                                                    class="nav-link text-white small {{ request()->is('master/permissions') ? 'active' : '' }}">
+                                                    <i class="bi bi-dot"></i> Permissions
+                                                </a>
+                                            </li> -->
                                 </ul>
                             </div>
                         </li>
@@ -212,27 +217,27 @@
                             </a>
                         </li>
                         @if($role === 'examcell')
-                        <li class="nav-item">
-                            <a href="{{ route('marks.approvals') }}"
-                                class="nav-link text-white {{ request()->routeIs('marks.approvals') ? 'active' : '' }}">
-                                <i class="bi bi-check2-square me-2"></i> Approve Marks
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('marksheet.wizard') }}"
-                                class="nav-link text-white {{ request()->routeIs('marksheet.wizard') ? 'active' : '' }}">
-                                <i class="bi bi-file-earmark-pdf me-2"></i> Marksheet
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('certificates.wizard') }}"
-                               class="nav-link text-white {{ request()->routeIs('certificates.wizard') ? 'active' : '' }}">
-                                <i class="bi bi-award me-2"></i> Certificate Wizard
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a href="{{ route('marks.approvals') }}"
+                                    class="nav-link text-white {{ request()->routeIs('marks.approvals') ? 'active' : '' }}">
+                                    <i class="bi bi-check2-square me-2"></i> Approve Marks
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('marksheet.wizard') }}"
+                                    class="nav-link text-white {{ request()->routeIs('marksheet.wizard') ? 'active' : '' }}">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i> Marksheet
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('certificates.wizard') }}"
+                                    class="nav-link text-white {{ request()->routeIs('certificates.wizard') ? 'active' : '' }}">
+                                    <i class="bi bi-award me-2"></i> Certificate Wizard
+                                </a>
+                            </li>
                         @endif
                     @endif
-                    
+
                 </ul>
             </div>
 
@@ -240,37 +245,52 @@
             <div class="col-md-10 p-4 position-relative" style="overflow:hidden;">
                 <img src="/logo.png" alt="Logo Background" class="content-bg-logo" />
                 <div style="position:relative;z-index:1;">
+                    @php
+                        $role = auth()->check() ? auth()->user()->role : null;
+                        $notifications = auth()->user()->notifications ?? collect();
+                        $unreadCount = auth()->user()->unreadNotifications->count() ?? 0;
+                    @endphp
                     <div class="d-flex justify-content-end mb-3 align-items-center">
-                        @if(in_array($role, ['admin', 'examcell','faculty']))
+                        @if(in_array($role, ['admin', 'examcell', 'faculty']))
                             {{-- Notification Bell and Inline Panel --}}
-                            @php
-                                $notifications = auth()->user()->notifications()->take(5)->get();
-                                $unreadCount = auth()->user()->unreadNotifications()->count();
-                            @endphp
                             <div class="me-3" style="position: relative; display: inline-block;">
-                                <button class="btn btn-outline-secondary position-relative" id="notificationBell" type="button">
+                                <button class="btn btn-outline-secondary position-relative" id="notificationBell"
+                                    type="button">
                                     <i class="bi bi-bell"></i>
                                     @if($unreadCount > 0)
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ $unreadCount }}</span>
+                                        <span
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            {{ $unreadCount }}
+                                        </span>
                                     @endif
                                 </button>
-                                <div id="notificationPanel" style="display:none; position:absolute; right:0; top:110%; z-index:9999; background:#fff; border:1px solid #ccc; border-radius:8px; min-width:350px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+                                <div id="notificationPanel"
+                                    style="display:none; position:absolute; right:0; top:110%; z-index:9999; background:#fff; border:1px solid #ccc; border-radius:8px; min-width:350px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
                                     <div class="p-2 border-bottom fw-bold">Notifications</div>
                                     <div style="max-height:300px; overflow-y:auto;">
                                         @forelse($notifications as $notification)
-                                            <div class="p-2 small {{ $notification->read_at ? '' : 'fw-bold bg-light' }}" style="border-bottom:1px solid #eee;">
-                                                <div><strong>{{ $notification->data['faculty'] ?? '' }}</strong> edited marks for <strong>{{ $notification->data['candidate'] ?? '' }}</strong></div>
-                                                <div>Course: {{ $notification->data['course'] ?? '' }}, Batch: {{ $notification->data['batch'] ?? '' }}</div>
-                                                <div>Subject: {{ $notification->data['subject'] ?? '' }}</div>
-                                                <div class="text-muted small">{{ $notification->created_at->diffForHumans() }}</div>
-                                                <div>{{ $notification->data['message'] ?? '' }}</div>
+                                            <div class="p-2 small {{ $notification->read_at ? '' : 'fw-bold bg-light' }}"
+                                                style="border-bottom:1px solid #eee;">
+                                                {{-- Use the keys you stored in your notification --}}
+                                                <a href="{{ $notification->data['url'] ?? '#' }}">
+                                                    <div>{{ $notification->data['message'] ?? '' }}</div>
+                                                </a>
+                                                @if(!empty($notification->data['student_id']))
+                                                    <div>Student ID: {{ $notification->data['student_id'] }}</div>
+                                                @endif
+                                                @if(!empty($notification->data['subject_id']))
+                                                    <div>Subject ID: {{ $notification->data['subject_id'] }}</div>
+                                                @endif
+                                                <div class="text-muted small">{{ $notification->created_at->diffForHumans() }}
+                                                </div>
                                             </div>
                                         @empty
                                             <div class="p-2 text-muted">No notifications</div>
                                         @endforelse
                                     </div>
                                     <div class="p-2 border-top">
-                                        <button class="btn btn-link btn-sm text-success" id="markAllReadBtn" type="button">Mark all as read</button>
+                                        <button class="btn btn-link btn-sm text-success" id="markAllReadBtn"
+                                            type="button">Mark all as read</button>
                                     </div>
                                 </div>
                             </div>
@@ -321,29 +341,34 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const bell = document.getElementById('notificationBell');
             const panel = document.getElementById('notificationPanel');
-            bell.addEventListener('click', function(e) {
-                e.stopPropagation();
-                panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
-            });
-            document.addEventListener('click', function() {
-                panel.style.display = 'none';
-            });
-            panel.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
+            if (bell) {
+                bell.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+                });
+                document.addEventListener('click', function () {
+                    panel.style.display = 'none';
+                });
+                panel.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                });
+            }
             // Mark all as read only when button is clicked
-            document.getElementById('markAllReadBtn').addEventListener('click', function() {
-                fetch("{{ route('notifications.markAllRead') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                }).then(() => location.reload());
-            });
+            const markAllReadBtn = document.getElementById('markAllReadBtn');
+            if (markAllReadBtn) {
+                markAllReadBtn.addEventListener('click', function () {
+                    fetch("{{ route('notifications.markAllRead') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    }).then(() => location.reload());
+                });
+            }
         });
 
         setTimeout(() => {
@@ -352,12 +377,12 @@
         }, 5000);
 
         // Mark notifications as read when dropdown is opened
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#notificationDropdown').on('show.bs.dropdown', function () {
-                $.post("{{ route('notifications.markAllRead') }}", {_token: '{{ csrf_token() }}'});
+                $.post("{{ route('notifications.markAllRead') }}", { _token: '{{ csrf_token() }}' });
             });
-            $('#markAllReadBtn').on('click', function() {
-                $.post("{{ route('notifications.markAllRead') }}", {_token: '{{ csrf_token() }}'}).done(function() {
+            $('#markAllReadBtn').on('click', function () {
+                $.post("{{ route('notifications.markAllRead') }}", { _token: '{{ csrf_token() }}' }).done(function () {
                     location.reload();
                 });
             });

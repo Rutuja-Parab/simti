@@ -47,8 +47,7 @@
                                     <label for="passport_no" class="form-label">Passport Number</label><span
                                         class="text-danger">*</span>
                                     <input type="text" class="form-control" name="passport_no" id="passport_no"
-                                        pattern="^[A-Za-z0-9]{9}$"
-                                        title="Please enter a valid passport number (9 letters/numbers)" required>
+                                        required>
                                 </div>
 
                                 <div class="mb-3">

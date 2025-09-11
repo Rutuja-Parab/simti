@@ -103,11 +103,9 @@ Route::middleware(['auth', RoleMiddleware::class . ':faculty,examcell,admin'])->
 });
 
 Route::post('/notifications/mark-all-read', function () {
-    if (auth()->check()) {
-        auth()->user()->unreadNotifications->markAsRead();
-    }
+    auth()->user()->unreadNotifications->markAsRead();
     return response()->json(['status' => 'ok']);
-})->name('notifications.markAllRead')->middleware('auth');
+})->name('notifications.markAllRead');
 
 Route::get('/verify/certificate/{id}', [App\Http\Controllers\CertificateController::class, 'verify'])->name('certificate.verify');
 

@@ -6,7 +6,10 @@ use App\Models\Candidate;
 use App\Models\Candidates;
 use Illuminate\Http\Request;
 use App\Models\CourseDetail;
+use App\Models\User;
+use App\Notifications\CandidateAddedNotification;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Session;
 
 class CandidateController extends Controller
@@ -25,7 +28,7 @@ class CandidateController extends Controller
                 'name' => 'required|string|max:255',
                 'dob' => 'required|date',
                 'indos_no' => 'required|string|max:100|unique:candidates,indos_no',
-                'passport_no' => 'required|string|max:100|unique:candidates,passport_no',
+                'passport_no' => 'required|string|max:100|unique:candidates,passport_no|regex:/^[A-Za-z0-9]{8}$/',
                 'cdc_no' => 'nullable|string|max:100',
                 'dgs_certificate_no' => 'nullable|string|max:100',
                 'course_detail_id' => 'required|exists:course_details,id',
@@ -55,7 +58,7 @@ class CandidateController extends Controller
             $roll_no = $courseCode . '-' . $batchNo . '-' . $rollPart;
 
             // Create candidate
-            \App\Models\Candidates::create([
+            $candidate = Candidates::create([
                 'roll_no' => $roll_no,
                 'name' => $request->name,
                 'dob' => $request->dob,
@@ -68,6 +71,9 @@ class CandidateController extends Controller
                 'signature_path' => $files['signature'],
                 'passport_path' => $files['passport'],
             ]);
+
+            $admins = User::where('role', 'admin')->get();
+            Notification::send($admins, new CandidateAddedNotification($candidate));
 
             // Clear session files
             Session::forget('files');
@@ -163,23 +169,23 @@ class CandidateController extends Controller
     }
 
     public function openFromToken(Request $request)
-{
-    $token = $request->query('token');
+    {
+        $token = $request->query('token');
 
-    try {
-        $data = json_decode(Crypt::decryptString($token), true);
-    } catch (\Exception $e) {
-        abort(404);
+        try {
+            $data = json_decode(Crypt::decryptString($token), true);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+
+        // optional expiry check (24h)
+        if (now()->timestamp - $data['ts'] > 86400) {
+            abort(403, 'Link expired.');
+        }
+
+        // Just redirect to your normal candidate-form route
+        return redirect()->route('course-details.createCandidateForm', [
+            'course_detail_id' => $data['id']
+        ]);
     }
-
-    // optional expiry check (24h)
-    if (now()->timestamp - $data['ts'] > 86400) {
-        abort(403, 'Link expired.');
-    }
-
-    // Just redirect to your normal candidate-form route
-    return redirect()->route('course-details.createCandidateForm', [
-        'course_detail_id' => $data['id']
-    ]);
-}
 }
