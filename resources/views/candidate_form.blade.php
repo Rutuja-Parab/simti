@@ -95,8 +95,7 @@
                                         <label for="passport_no" class="form-label">Passport Number <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="passport_no" id="passport_no"
-                                            pattern="^[A-Za-z0-9]{9}$"
-                                            title="Please enter a valid passport number (9 letters/numbers)" required>
+                                            required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="cdc_no" class="form-label">CDC Number</label>
@@ -195,7 +194,7 @@
                     formData.append('type', type);
                     formData.append('_token', '{{ csrf_token() }}');
 
-                    fetch('{{ route('candidate.upload') }}', {
+                    fetch("{{ route('candidate.upload') }}", {
                         method: 'POST',
                         body: formData,
                         credentials: 'same-origin'

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Models\CourseDetail;
+use App\Models\User;
+use App\Notifications\CandidateAddedNotification;
+use Illuminate\Support\Facades\Notification;
 
 class PhotoValidationController extends Controller
 {
@@ -166,7 +169,7 @@ class PhotoValidationController extends Controller
                 'name' => $request->name,
                 'dob' => $request->dob,
                 'indos_no' => $request->indos_no,
-                'passport_no' => $request->passport_no,
+                'passport_no' => ['required','regex:/^[A-Za-z0-9]{8}$/'],
                 'cdc_no' => $request->cdc_no,
                 'dgs_certificate_no' => $request->dgs_certificate_no,
                 'course_detail_id' => $courseDetail->id,
@@ -174,6 +177,10 @@ class PhotoValidationController extends Controller
                 'signature_path' => $files['signature'],
                 'passport_path' => $files['passport'],
             ]);
+
+            $admins = User::where('role', 'admin')->get();
+            Notification::send($admins, new CandidateAddedNotification($candidate));
+
 
             Session::forget('files');
             return back()->with('success', 'All documents successfully submitted!');

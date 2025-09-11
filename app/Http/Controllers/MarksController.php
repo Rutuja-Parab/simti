@@ -6,7 +6,10 @@ use App\Models\Candidates;
 use App\Models\Course;
 use App\Models\Marks;
 use App\Models\Subject;
+use App\Models\User;
+use App\Notifications\MarksUpdatedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class MarksController extends Controller
 {
@@ -98,10 +101,11 @@ class MarksController extends Controller
             }
             if ($isGme && is_array($mark)) {
                 // GME: Save both terms
-                foreach ([1,2] as $term) {
+                foreach ([1, 2] as $term) {
                     $termMark = $mark[$term] ?? null;
-                    if (!isset($termMark) || $termMark === '' || !is_numeric($termMark)) continue;
-                    Marks::updateOrCreate(
+                    if (!isset($termMark) || $termMark === '' || !is_numeric($termMark))
+                        continue;
+                    $marks = Marks::updateOrCreate(
                         [
                             'candidate_id' => $candidate->id,
                             'subject_id' => $subjectId,
@@ -119,8 +123,9 @@ class MarksController extends Controller
                 }
             } else {
                 // Non-GME: Save single mark
-                if (!isset($mark) || $mark === '' || !is_numeric($mark)) continue;
-                Marks::updateOrCreate(
+                if (!isset($mark) || $mark === '' || !is_numeric($mark))
+                    continue;
+                $marks = Marks::updateOrCreate(
                     [
                         'candidate_id' => $candidate->id,
                         'subject_id' => $subjectId,
@@ -136,21 +141,26 @@ class MarksController extends Controller
                     ]
                 );
             }
+            $examcells = User::where('role', 'examcell')->get();
+            Notification::send($examcells, new MarksUpdatedNotification($marks));
+            // // faculty of that subject
+            // $faculty = User::find($marks->faculty_id);
+            // $faculty->notify(new MarksUpdatedNotification($marks));
 
-                // Notify examcell users if edited by faculty
-                // if ($user->role === 'faculty' || $user->role === 'teacher') {
-                //     $examcellUsers = \App\Models\User::where('role', 'examcell')->get();
-                //     foreach ($examcellUsers as $examcell) {
-                //         $examcell->notify(new \App\Notifications\MarksEditedNotification([
-                //             'faculty' => $user->name,
-                //             'course' => $candidate->courseDetail && $candidate->courseDetail->course ? $candidate->courseDetail->course->name : '-',
-                //             'batch' => $candidate->courseDetail ? $candidate->courseDetail->batch_no : '-',
-                //             'candidate' => $candidate->name,
-                //             'subject' => \App\Models\Subject::find($subjectId)->name ?? '-',
-                //             'message' => 'Marks edited by ' . $user->name
-                //         ]));
-                //     }
-                // }
+            // Notify examcell users if edited by faculty
+            // if ($user->role === 'faculty' || $user->role === 'teacher') {
+            //     $examcellUsers = \App\Models\User::where('role', 'examcell')->get();
+            //     foreach ($examcellUsers as $examcell) {
+            //         $examcell->notify(new \App\Notifications\MarksEditedNotification([
+            //             'faculty' => $user->name,
+            //             'course' => $candidate->courseDetail && $candidate->courseDetail->course ? $candidate->courseDetail->course->name : '-',
+            //             'batch' => $candidate->courseDetail ? $candidate->courseDetail->batch_no : '-',
+            //             'candidate' => $candidate->name,
+            //             'subject' => \App\Models\Subject::find($subjectId)->name ?? '-',
+            //             'message' => 'Marks edited by ' . $user->name
+            //         ]));
+            //     }
+            // }
         }
 
         return redirect()->route('candidate.view')->with('success', 'Candidate and marks saved successfully.');
