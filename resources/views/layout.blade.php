@@ -241,7 +241,7 @@
                 <img src="/logo.png" alt="Logo Background" class="content-bg-logo" />
                 <div style="position:relative;z-index:1;">
                     <div class="d-flex justify-content-end mb-3 align-items-center">
-                        @if(in_array($role, ['admin', 'examcell']))
+                        @if(in_array($role, ['admin', 'examcell','faculty']))
                             {{-- Notification Bell and Inline Panel --}}
                             @php
                                 $notifications = auth()->user()->notifications()->take(5)->get();

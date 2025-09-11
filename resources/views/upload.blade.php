@@ -46,7 +46,9 @@
                                 <div class="mb-3">
                                     <label for="passport_no" class="form-label">Passport Number</label><span
                                         class="text-danger">*</span>
-                                    <input type="text" class="form-control" name="passport_no" id="passport_no" required>
+                                    <input type="text" class="form-control" name="passport_no" id="passport_no"
+                                        pattern="^[A-Za-z0-9]{9}$"
+                                        title="Please enter a valid passport number (9 letters/numbers)" required>
                                 </div>
 
                                 <div class="mb-3">
@@ -155,9 +157,9 @@
                                     `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">`;
                             } else if (fileType === 'application/pdf') {
                                 previewBox.innerHTML = `
-            <iframe src="${e.target.result}" type="application/pdf" width="100%" height="500px" class="border rounded"></iframe>
-            <div class="small text-muted mt-1"><i class="bi bi-file-earmark-pdf"></i> ${file.name}</div>
-        `;
+                <iframe src="${e.target.result}" type="application/pdf" width="100%" height="500px" class="border rounded"></iframe>
+                <div class="small text-muted mt-1"><i class="bi bi-file-earmark-pdf"></i> ${file.name}</div>
+            `;
                             } else {
                                 previewBox.innerHTML =
                                     `<div class="text-muted">Preview not available</div>`;

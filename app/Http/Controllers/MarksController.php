@@ -138,19 +138,19 @@ class MarksController extends Controller
             }
 
                 // Notify examcell users if edited by faculty
-                if ($user->role === 'faculty' || $user->role === 'teacher') {
-                    $examcellUsers = \App\Models\User::where('role', 'examcell')->get();
-                    foreach ($examcellUsers as $examcell) {
-                        $examcell->notify(new \App\Notifications\MarksEditedNotification([
-                            'faculty' => $user->name,
-                            'course' => $candidate->courseDetail && $candidate->courseDetail->course ? $candidate->courseDetail->course->name : '-',
-                            'batch' => $candidate->courseDetail ? $candidate->courseDetail->batch_no : '-',
-                            'candidate' => $candidate->name,
-                            'subject' => \App\Models\Subject::find($subjectId)->name ?? '-',
-                            'message' => 'Marks edited by ' . $user->name
-                        ]));
-                    }
-                }
+                // if ($user->role === 'faculty' || $user->role === 'teacher') {
+                //     $examcellUsers = \App\Models\User::where('role', 'examcell')->get();
+                //     foreach ($examcellUsers as $examcell) {
+                //         $examcell->notify(new \App\Notifications\MarksEditedNotification([
+                //             'faculty' => $user->name,
+                //             'course' => $candidate->courseDetail && $candidate->courseDetail->course ? $candidate->courseDetail->course->name : '-',
+                //             'batch' => $candidate->courseDetail ? $candidate->courseDetail->batch_no : '-',
+                //             'candidate' => $candidate->name,
+                //             'subject' => \App\Models\Subject::find($subjectId)->name ?? '-',
+                //             'message' => 'Marks edited by ' . $user->name
+                //         ]));
+                //     }
+                // }
         }
 
         return redirect()->route('candidate.view')->with('success', 'Candidate and marks saved successfully.');

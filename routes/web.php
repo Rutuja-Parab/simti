@@ -38,9 +38,8 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::post('/users/{user}', [UserController::class, 'update'])->name('users.update');
-    Route::get('/admin/dashboard', function () {
-        return view('adminDashboard');
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [App\Http\Controllers\Controller::class, 'adminDashboard'])->name('dashboard');
+
 
 
     // Master Routes
@@ -60,8 +59,11 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
 
 // Shared Routes (faculty + Manager)
 Route::middleware(['auth', RoleMiddleware::class . ':faculty,examcell,admin'])->group(function () {
-    // Replace the closure route for admin dashboard with a controller method
-    Route::get('/admin/dashboard', [App\Http\Controllers\Controller::class, 'adminDashboard'])->name('dashboard');
+    // Route::get('/admin/dashboard', [App\Http\Controllers\Controller::class, 'adminDashboard'])->name('dashboard');
+
+    Route::get('/dashboard', function () {
+        return view('index');
+    })->name('index');
 
     Route::get('/add-candidate', [PhotoValidationController::class, 'addCandidate'])->name('candidate.add');
     Route::get('/candidate', [PhotoValidationController::class, 'candidate'])->name('candidate.view');
@@ -71,7 +73,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':faculty,examcell,admin'])->
     Route::post('/upload', [PhotoValidationController::class, 'upload'])->name('photo.upload');
     Route::post('/submit-all', [PhotoValidationController::class, 'finalSubmit'])->name('final.submit');
     // web.php
-Route::get('/candidate/{id}/marksheet', [PhotoValidationController::class, 'generateMarksheet'])->name('candidate.marksheet');
+    Route::get('/candidate/{id}/marksheet', [PhotoValidationController::class, 'generateMarksheet'])->name('candidate.marksheet');
 
 
     Route::get('/add-marks/{candidate}', [MarksController::class, 'create'])->name('marks.create');
@@ -85,7 +87,7 @@ Route::get('/candidate/{id}/marksheet', [PhotoValidationController::class, 'gene
     Route::post('/marks/approvals/{course_id}/{batch}/approve', [\App\Http\Controllers\MarksApprovalController::class, 'approveGroup'])->name('marks.approvals.group.approve');
     Route::post('/marks/approvals/{mark}/approve', [\App\Http\Controllers\MarksApprovalController::class, 'approveMark'])->name('marks.approvals.mark.approve');
     Route::post('/marks/approvals/{mark}/reject', [\App\Http\Controllers\MarksApprovalController::class, 'rejectMark'])->name('marks.approvals.mark.reject');
-    
+
     // Marksheet Generation Wizard (admin/examcell only)
     Route::get('/marksheet/wizard', [CourseMarksController::class, 'marksheetWizard'])->name('marksheet.wizard');
     Route::get('/marksheet/batches/{courseId}', [CourseMarksController::class, 'getBatchesForCourse'])->name('marksheet.getBatches');
