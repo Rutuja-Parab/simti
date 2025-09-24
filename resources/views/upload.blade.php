@@ -27,7 +27,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Full Name</label><span class="text-danger">*</span>
+                                    <label for="name" class="form-label">Full Name</label><span
+                                        class="text-danger">*</span>
                                     <input type="text" class="form-control" name="name" id="name" required>
                                 </div>
 
@@ -46,8 +47,7 @@
                                 <div class="mb-3">
                                     <label for="passport_no" class="form-label">Passport Number</label><span
                                         class="text-danger">*</span>
-                                    <input type="text" class="form-control" name="passport_no" id="passport_no"
-                                        required>
+                                    <input type="text" class="form-control" name="passport_no" id="passport_no" required>
                                 </div>
 
                                 <div class="mb-3">
@@ -67,8 +67,9 @@
                                     <label for="course_detail_id" class="form-label">Course & Batch</label>
                                     <select name="course_detail_id" id="course_detail_id" class="form-select" required>
                                         <option value="">Select Course & Batch</option>
-                                        @foreach($courseDetails as $cd)
-                                            <option value="{{ $cd->id }}">{{ $cd->course->name }} - Batch {{ $cd->batch_no }}
+                                        @foreach ($courseDetails as $cd)
+                                            <option value="{{ $cd->id }}">{{ $cd->course->name }} - Batch
+                                                {{ $cd->batch_no }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -77,7 +78,8 @@
                                 {{-- Document Uploads --}}
                                 @foreach (['photo' => 'Passport Photo', 'signature' => 'Signature', 'passport' => 'Passport Document'] as $type => $label)
                                     <div class="mb-4">
-                                        <label class="form-label">{{ $label }}</label><span class="text-danger">*</span>
+                                        <label class="form-label">{{ $label }}</label><span
+                                            class="text-danger">*</span>
                                         <input type="file" class="form-control file-input" name="{{ $type }}"
                                             data-type="{{ $type }}" required accept=".jpg,.jpeg,.png,.pdf">
 
@@ -126,13 +128,13 @@
 
         {{-- Script --}}
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const inputs = document.querySelectorAll('.file-input');
                 const submitBtn = document.getElementById('finalSubmitBtn');
                 const validationStatus = {};
 
                 inputs.forEach(input => {
-                    input.addEventListener('change', function () {
+                    input.addEventListener('change', function() {
                         const type = input.dataset.type;
                         const file = input.files[0];
                         const loader = input.parentElement.querySelector('.loader');
@@ -146,26 +148,31 @@
                         resultBox.innerHTML = '';
                         previewBox.innerHTML = '';
 
-                        // Show preview
                         const fileType = file.type;
-                        const reader = new FileReader();
 
-                        reader.onload = function (e) {
-                            if (fileType.startsWith('image/')) {
+                        // Show preview
+                        if (fileType.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
                                 previewBox.innerHTML =
                                     `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">`;
-                            } else if (fileType === 'application/pdf') {
-                                previewBox.innerHTML = `
-                <iframe src="${e.target.result}" type="application/pdf" width="100%" height="500px" class="border rounded"></iframe>
-                <div class="small text-muted mt-1"><i class="bi bi-file-earmark-pdf"></i> ${file.name}</div>
-            `;
-                            } else {
-                                previewBox.innerHTML =
-                                    `<div class="text-muted">Preview not available</div>`;
-                            }
-                        };
+                            };
+                            reader.readAsDataURL(file);
 
-                        reader.readAsDataURL(file);
+                        } else if (fileType === 'application/pdf') {
+                            const url = URL.createObjectURL(file);
+                            previewBox.innerHTML = `
+                    <iframe src="${url}" width="100%" height="500" class="border rounded"></iframe>
+                    <div class="small text-muted mt-1">
+                        <i class="bi bi-file-earmark-pdf"></i> ${file.name}
+                    </div>
+                `;
+                            // Optional: revoke the URL after some time to free memory
+                            setTimeout(() => URL.revokeObjectURL(url), 60000);
+                        } else {
+                            previewBox.innerHTML =
+                                `<div class="text-muted">Preview not available</div>`;
+                        }
 
                         // Send to backend for validation
                         const formData = new FormData();
@@ -174,15 +181,15 @@
                         formData.append('_token', '{{ csrf_token() }}');
 
                         fetch('{{ route('photo.upload') }}', {
-                            method: 'POST',
-                            body: formData
-                        })
+                                method: 'POST',
+                                body: formData
+                            })
                             .then(response => response.text())
                             .then(html => {
                                 loader.classList.add('d-none');
                                 resultBox.innerHTML = html;
 
-                                const isValid = !html.includes('error') && !html.includes('Error');
+                                const isValid = !html.toLowerCase().includes('error');
                                 validationStatus[type] = isValid;
                                 checkAllValidated();
                             })
@@ -201,6 +208,7 @@
                 }
             });
         </script>
+
 
     </body>
 @endsection

@@ -109,16 +109,26 @@ class PhotoValidationController extends Controller
             return ['error' => 'Image file not found.'];
         }
 
-        $python = 'python';
-        $command = "$python \"$scriptPath\" \"$absoluteImagePath\" 2>&1";
-
-        $output = shell_exec($command);
-
-        if (!$output) {
-            return ['error' => 'No response from Python script.'];
+        if (app()->environment('local')) {
+            $python = 'python'; // system Python in local
+        } else {
+            $python = base_path('venv/bin/python'); // venv Python in production
         }
 
-        $decoded = json_decode($output, true);
+        // Run Python script and capture output
+        $command = "\"$python\" \"$scriptPath\" \"$absoluteImagePath\" 2>&1";
+        $output = shell_exec($command);
+
+        // Strip lines starting with [W...] (NNPACK or other warnings)
+        $outputLines = explode("\n", $output);
+        $jsonOutput = '';
+        foreach ($outputLines as $line) {
+            if (preg_match('/^\[W\d+/', $line)) continue; // skip warnings
+            $jsonOutput .= $line;
+        }
+
+        $decoded = json_decode($jsonOutput, true);
+
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
@@ -169,7 +179,7 @@ class PhotoValidationController extends Controller
                 'name' => $request->name,
                 'dob' => $request->dob,
                 'indos_no' => $request->indos_no,
-                'passport_no' => ['required','regex:/^[A-Za-z0-9]{8}$/'],
+                'passport_no' => ['required', 'regex:/^[A-Za-z0-9]{8}$/'],
                 'cdc_no' => $request->cdc_no,
                 'dgs_certificate_no' => $request->dgs_certificate_no,
                 'course_detail_id' => $courseDetail->id,
