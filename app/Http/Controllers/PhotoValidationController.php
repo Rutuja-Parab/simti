@@ -174,12 +174,12 @@ class PhotoValidationController extends Controller
             }
             $roll_no = $courseCode . '-' . $batchNo . '-' . $rollPart;
 
-            \App\Models\Candidates::create([
+            $candidate = \App\Models\Candidates::create([
                 'roll_no' => $roll_no,
                 'name' => $request->name,
                 'dob' => $request->dob,
                 'indos_no' => $request->indos_no,
-                'passport_no' => ['required', 'regex:/^[A-Za-z0-9]{8}$/'],
+                'passport_no' => $request->passport_no,
                 'cdc_no' => $request->cdc_no,
                 'dgs_certificate_no' => $request->dgs_certificate_no,
                 'course_detail_id' => $courseDetail->id,
@@ -196,6 +196,7 @@ class PhotoValidationController extends Controller
             return back()->with('success', 'All documents successfully submitted!');
         } catch (\Exception $e) {
             \Log::error('Final Submit Error: ' . $e->getMessage());
+            dd($e);
             return back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
