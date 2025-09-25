@@ -123,7 +123,8 @@ class PhotoValidationController extends Controller
         $outputLines = explode("\n", $output);
         $jsonOutput = '';
         foreach ($outputLines as $line) {
-            if (preg_match('/^\[W\d+/', $line)) continue; // skip warnings
+            if (preg_match('/^\[W\d+/', $line))
+                continue; // skip warnings
             $jsonOutput .= $line;
         }
 
@@ -159,20 +160,28 @@ class PhotoValidationController extends Controller
             }
 
             $courseDetail = \App\Models\CourseDetail::with('course')->findOrFail($request->course_detail_id);
+
             // Get roll part from request
             $rollPart = '01';
             if ($request->has('roll_no')) {
                 $rollParts = explode('-', $request->roll_no);
                 $rollPart = isset($rollParts[2]) ? $rollParts[2] : $request->roll_no;
             }
+
+            // Ensure rollPart is 2 digits
+            $rollPart = str_pad((int) $rollPart, 2, '0', STR_PAD_LEFT);
+
+            // Prepare batchNo
             $batchNo = str_pad($courseDetail->batch_no, 2, '0', STR_PAD_LEFT);
-            $courseName = $courseDetail->course->name;
-            if (preg_match('/\((.*?)\)/', $courseName, $matches)) {
-                $courseCode = $matches[1];
-            } else {
-                $courseCode = strtok($courseName, ' ');
+
+            // Generate initial roll_no
+            $roll_no = $batchNo . '-' . $rollPart;
+
+            // Check if roll_no exists and increment
+            while (Candidates::where('roll_no', $roll_no)->exists()) {
+                $rollPart = str_pad((int) $rollPart + 1, 2, '0', STR_PAD_LEFT);
+                $roll_no = $batchNo . '-' . $rollPart;
             }
-            $roll_no = $courseCode . '-' . $batchNo . '-' . $rollPart;
 
             $candidate = \App\Models\Candidates::create([
                 'roll_no' => $roll_no,
@@ -190,8 +199,6 @@ class PhotoValidationController extends Controller
 
             $admins = User::where('role', 'admin')->get();
             Notification::send($admins, new CandidateAddedNotification($candidate));
-
-
             Session::forget('files');
             return back()->with('success', 'All documents successfully submitted!');
         } catch (\Exception $e) {
@@ -207,10 +214,10 @@ class PhotoValidationController extends Controller
 
         $candidates = $user->role === 'faculty'
             ? Candidates::with('courseDetail.course')
-            ->whereIn('course_detail_id', CourseDetail::whereHas('course', function ($q) use ($user) {
-                $q->whereIn('id', $user->subjects()->pluck('subjects.id'));
-            })->pluck('id'))
-            ->get()
+                ->whereIn('course_detail_id', CourseDetail::whereHas('course', function ($q) use ($user) {
+                    $q->whereIn('id', $user->subjects()->pluck('subjects.id'));
+                })->pluck('id'))
+                ->get()
             : Candidates::with('courseDetail.course')->get();
 
         $headers = ['Roll No', 'Name', 'DOB', 'Course', 'Batch No', 'INDOS', 'Passport', 'CDC', 'DGS Certificate No'];

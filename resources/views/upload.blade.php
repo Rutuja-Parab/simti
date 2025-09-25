@@ -23,7 +23,7 @@
                                 {{-- Candidate Info --}}
                                 <div class="mb-3">
                                     <label for="roll_no" class="form-label">Roll Number (For Example : 01)</label>
-                                    <input type="text" class="form-control" id="roll_no">
+                                    <input type="text" class="form-control" id="roll_no" name="roll_no">
                                 </div>
 
                                 <div class="mb-3">
