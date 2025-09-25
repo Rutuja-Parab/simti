@@ -59,7 +59,7 @@
                                     <label for="dgs_certificate_no" class="form-label">DGS Certificate Number</label>
                                     <input type="text" class="form-control" name="dgs_certificate_no"
                                         id="dgs_certificate_no" pattern="[A-Za-z0-9]{12}" maxlength="12" minlength="12"
-                                        title="Please enter exactly 12 letters or digits" required>
+                                        title="Please enter exactly 12 letters or digits">
                                 </div>
 
                                 {{-- Course Dropdown --}}

@@ -28,7 +28,7 @@
         </div>
         <div class="mb-3">
             <label for="cdc_no" class="form-label">CDC No</label>
-            <input type="text" name="cdc_no" id="cdc_no" class="form-control" value="{{ $candidate->cdc_no }}" required>
+            <input type="text" name="cdc_no" id="cdc_no" class="form-control" value="{{ $candidate->cdc_no }}" >
         </div>
         <div class="mb-3">
             <label for="dgs_certificate_no" class="form-label">DGS Certificate No (Optional)</label>
